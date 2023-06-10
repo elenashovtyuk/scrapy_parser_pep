@@ -1,4 +1,5 @@
 import scrapy
+from pep_parse.items import PepParseItem
 
 
 class PepSpider(scrapy.Spider):
@@ -6,5 +7,28 @@ class PepSpider(scrapy.Spider):
     allowed_domains = ['peps.python.org']
     start_urls = ['http://peps.python.org/']
 
+    # имеем дело с обработкой страниц с разной структурой
+    # метод parse() должен собирать ссылки на документы PEP
     def parse(self, response):
-        pass
+        # находим все ссылки на документы PEP
+        all_docs = response.css('#numerical-index td a::attr(href)').getall()
+        # перебираем в цикле ссылки на документы PEP
+        # и для каждой ссылки на документ нам нужно осуществить:
+        # переход по этой ссылке, т.е загрузку страницы для каждого документа
+        # и вызов метода parse_pep для каждой из них
+        # чтобы спарсить нужную информацию о каждом документе
+        # Возвращаем response.follow() с вызовом метода parse_pep()
+        for doc_link in all_docs:
+            yield response.follow(doc_link, callback=self.parse_pep)
+
+    # парсит страницы документов PEP по собранным ссылкам
+    def parse_pep(self, response):
+        # парсинг страницы документа PEP и
+        # возврат полученных данных в виде Items
+        data = {
+            'number': response.css(''),
+            'name': response.css('h1.page-title::text').get(),
+            'status': response.css(''),
+        }
+
+        yield PepParseItem(data)
