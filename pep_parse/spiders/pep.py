@@ -23,12 +23,19 @@ class PepSpider(scrapy.Spider):
 
     # парсит страницы документов PEP по собранным ссылкам
     def parse_pep(self, response):
-        # парсинг страницы документа PEP и
+        # парсинг страницы документа PEP
+        # сохранение спарсенных данных в словарь и
         # возврат полученных данных в виде Items
-        data = {
-            'number': response.css(''),
-            'name': response.css('h1.page-title::text').get(),
-            'status': response.css(''),
-        }
 
+        # номер и название документа находятся в одной строке и разделены
+        # символом "-"
+        number, name = response.css('h1.page-title::text').get().split(' – ')
+        data = {
+            'number': number.replace('PEP ', ''),
+            'name': name,
+            'status': response.css(
+                'dt:contains("Status") + dd abbr::text').get(),
+        }
+        # словарь с полученными данными передаем в конструктор класса
+        # PepParseItem
         yield PepParseItem(data)
