@@ -10,10 +10,10 @@ from pathlib import Path
 
 # создание константы BASE_DIR
 # Path(__file__) - абсолютный путь до текущего файла
-# Path(__file__).parent - путь до директории с текущим файлом
-# (это директория pep_parse
-# Path(__file__).parent.parent - это будет корневая директория
-# SCRAPY_PARSER_PEP с проектом
+# Path(__file__).parent - вернет PosixPath('SCRAPY_PARSER_PEP/pep_parse')
+# Path(__file__).parent.parent - это будет корневая директория с проектом
+# PosixPath('SCRAPY_PARSER_PEP')
+# то есть вместо __file__ мы подставляем абсолютный путь до файла
 BASE_DIR = Path(__file__).parent.parent
 # в константе RESULT_DIR сохраним путь до директории results
 # где будут сохраняться файлы

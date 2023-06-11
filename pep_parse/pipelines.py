@@ -18,6 +18,10 @@ class PepParsePipeline:
     # в методе __init__(self) мы задаем адрес расположения будущего файла
     def __init__(self):
         # cформируем путь до новой директории results
+        # в BASE_DIR - у нас будет корневая папка
+        # BASE_DIR = Path('SCRAPY_PARSER_PEP/results').parent.parent - вернет корневую папку
+        # а RESULT_DIR вернет PosixPath('results')
+        # итогом будет абсолютный путь до новой директории results
         self.filepath = BASE_DIR / RESULT_DIR
         # создаем директорию с помощью метода mkdir
         # укажем параметр exist_ok=True,
@@ -75,8 +79,15 @@ class PepParsePipeline:
         ) as csvfile:
             # дальше с помощью функции write() cоздадим объект для записи
             csv_writer_file = csv.writer(
+                # первый параметр - файловый объект
                 csvfile,
+                # второй параметр - dialect
+                # cтрока с встроенным диалектом из списка csv.list_dialects()
                 dialect=csv.unix_dialect,
+                # третий параметр - quoting
+                # указыввает, что ни одна запись не должна заключаться в кавычки
+                # есть несколько вариантов
+                # (ставить кавычки вокург всех значений, вокруг только нечисловых и тд)
                 quoting=csv.QUOTE_NONE
             )
             # дальше нужно применить функцию writerows,
