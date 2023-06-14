@@ -1,4 +1,7 @@
 import csv
+import os.path
+import os
+
 import datetime as dt
 from collections import defaultdict
 
@@ -12,8 +15,9 @@ class PepParsePipeline:
         Задаем адрес расположения будущего файла со сводкой
         по статусам PEP-документов.
         """
-        self.filepath = BASE_DIR / RESULT_DIR
-        self.filepath.mkdir(exist_ok=True)
+        self.filepath = os.path.join(BASE_DIR, RESULT_DIR)
+        if not os.path.exists(self.filepath):
+            os.mkdir(self.filepath)
 
     def open_spider(self, spider):
         """
@@ -33,11 +37,11 @@ class PepParsePipeline:
         Завершаем экспорт данных в csv-файл.
         """
         dt_obj = dt.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
-        filename = f'status_summary_{dt_obj}.csv'
+        filename = f'results/status_summary_{dt_obj}.csv/'
 
         with open(
-            self.filepath / filename,
-            mode='w',
+            BASE_DIR / filename,
+            'w',
             encoding='utf-8'
         ) as csvfile:
             csv_writer_file = csv.writer(
@@ -47,7 +51,7 @@ class PepParsePipeline:
             )
 
             csv_writer_file.writerows([
-                ['Статус', 'Количество'],
+                ('Статус', 'Количество'),
                 *self.status_sum.items(),
-                ['Total', sum(self.status_sum.values())]
+                ('Total', sum(self.status_sum.values()))
             ])
